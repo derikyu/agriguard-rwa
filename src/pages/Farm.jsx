@@ -3,6 +3,8 @@ import axios from "axios";
 import * as MUI from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import html2canvas from "html2canvas";
+import { Buffer } from "buffer/";
 
 const Farm = () => {
   const [formData, setFormData] = useState({
@@ -83,80 +85,72 @@ const Farm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const chartContainer = document.getElementById("chart-container");
-    html2canvas(chartContainer).then((canvas) => {
-      const imageData = canvas.toDataURL("image/png");
-      console.log("imageData", imageData);
-      // setImageData(imageData);
-    });
 
     try {
-      // Call the getMerkleTree function to obtain the treeKeypair and treeAuthority
-      const { treeKeypair, treeAuthority } = await getMerkleTree();
-      // Now you can use treeKeypair and treeAuthority as needed
-      console.log("Tree Keypair:", treeKeypair.publicKey.toBase58());
-      console.log("Tree Authority:", treeAuthority.toBase58());
-      // Other operations with treeKeypair and treeAuthority
+      console.log("farmLocation ", requestData);
+      //  // Updated formData object
+      const updatedFormData = {
+        farmName: "Farm 1",
+        farmLocation: farmLocation,
+        ownershipType: "family-owned",
+        ndvi_chart: "",
+        cropTree: "cocoa",
+        irrigationSystem: "drip irrigation",
+        insurer: "Ghana Agricultural Insurance Pool (GAIP)",
+        farmerFields: Cookies.get("farmerId"),
+      };
+      // console.log(updatedFormData);
+      const response = await fetch(
+        "https://ecedilink.onrender.com/farm-fields/",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedFormData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      // calculate ndvi
+      // Extracting coordinates
+      // Making the request with only coordinates
+      axios
+        .post("https://ndvi-vwp8.onrender.com/ndvi/", requestData)
+        .then((response) => {
+          console.log("Request successful:", response.data.cvs_data);
+          // update the users farm profile with new ndvi chat data
+          // update by farm id data._id
+          const newData = {
+            ndvi_chart: response.data.cvs_data,
+          };
+
+          // generate the chart image string
+          axios
+            .put(
+              `https://ecedilink.onrender.com/farm-fields/${data._id}`,
+              newData
+            )
+            .then((response) => {
+              console.log("Resource updated successfully:", response.data);
+              // create nft from chart
+              // pass chart data to the nft creation method
+              // pass
+              // Navigate to the dashboard after successful update
+              navigate("/dashboard");
+            })
+            .catch((error) => {
+              console.error("Error updating resource:", error);
+            });
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+      // save id to cookie
+      console.log("Farmer data created successfully:", data);
     } catch (error) {
-      console.error("Error obtaining the merkle tree:", error);
+      console.error("Error sending form data:", error.code);
     }
-    // try {
-    // console.log("farmLocation ", requestData);
-    // //  // Updated formData object
-    // const updatedFormData = {
-    //   farmName: "Farm 1",
-    //   farmLocation: farmLocation,
-    //   ownershipType: "family-owned",
-    //   ndvi_chart: "",
-    //   cropTree: "cocoa",
-    //   irrigationSystem: "drip irrigation",
-    //   insurer: "Ghana Agricultural Insurance Pool (GAIP)",
-    //   farmerFields: Cookies.get("farmerId"),
-    // };
-    // // console.log(updatedFormData);
-    // const response = await fetch("http://localhost:3000/farm-fields/", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(updatedFormData),
-    // });
-    // if (!response.ok) {
-    //   throw new Error(`Error: ${response.statusText}`);
-    // }
-    // const data = await response.json();
-    // // calculate ndvi
-    // // Extracting coordinates
-    // // Making the request with only coordinates
-    // axios
-    //   .post("http://127.0.0.1:8000/ndvi/", requestData)
-    //   .then((response) => {
-    //     console.log("Request successful:", response.data.cvs_data);
-    //     // update the users farm profile with new ndvi chat data
-    //     // update by farm id data._id
-    //     const newData = {
-    //       ndvi_chart: response.data.cvs_data,
-    //     };
-    //     axios
-    //       .put(`http://localhost:3000/farm-fields/${data._id}`, newData)
-    //       .then((response) => {
-    //         console.log("Resource updated successfully:", response.data);
-    //         // create nft from chart
-    //         // pass chart data to the nft creation method
-    //         // pass
-    //         // Navigate to the dashboard after successful update
-    //         navigate("/dashboard");
-    //       })
-    //       .catch((error) => {
-    //         console.error("Error updating resource:", error);
-    //       });
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error:", error);
-    //   });
-    // save id to cookie
-    // console.log("Farmer data created successfully:", data);
-    // } catch (error) {
-    //   console.error("Error sending form data:", error.code);
-    // }
   };
 
   return (

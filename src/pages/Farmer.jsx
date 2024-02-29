@@ -14,7 +14,6 @@ const Farmer = () => {
     gender: "Male",
     dob: "1990-01-01",
     ghCard: "GH123456",
-    password: "kjbsdjbsdf", // Omit password for security reasons
     contactNumber: "+1234567890",
     cooperativeName: "AGRIC COOP-GHANA",
     publicKey: Cookies.get("account"),
@@ -148,17 +147,6 @@ const Farmer = () => {
           fullWidth
           sx={{ mb: 2 }}
         />
-        {/* Omit password field for security reasons */}
-        {/* <MUI.TextField
-          label="Password"
-          name="password"
-          value={formData.password}
-          onChange={handleChange}
-          type="password"
-          required
-          fullWidth
-          sx={{ mb: 2 }}
-        /> */}
         <MUI.TextField
           label="Public Key"
           name="publicKey"
@@ -175,7 +163,7 @@ const Farmer = () => {
           fullWidth
           sx={{ mb: 2 }}
         />
-        <MUI.Button type="submit" variant="contained" color="primary">
+        <MUI.Button type="submit" variant="contained" color="success">
           Submit
         </MUI.Button>
       </MUI.Box>
