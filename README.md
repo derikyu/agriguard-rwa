@@ -1,8 +1,7 @@
-# React + Vite
+# Agriguard: Farmland as a Real World Asset on Solana
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Join the future of farming by registering your farmland as a real-world asset on the Solana blockchain. Empower your land with the latest technology and gain insights through NDVI calculations stored as chart cNFTs.
 
-Currently, two official plugins are available:
+### Links
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Live Site URL: (https://agriguard-rwa.vercel.app/)
