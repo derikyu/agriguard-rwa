@@ -1,18 +1,9 @@
 import * as MUI from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import React, { useState } from "react";
-import html2canvas from "html2canvas";
-import {
-  LineChart,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  CartesianGrid,
-  Line,
-} from "recharts";
+import { useState } from "react";
+import Cookies from "js-cookie";
 
-const Dashboard = () => {
+const Profile = () => {
   const navigate = useNavigate();
 
   const goToFarm = (event) => {
@@ -67,17 +58,40 @@ const Dashboard = () => {
       return { date, ndvi: parseFloat(ndvi) };
     });
 
-  const saveChartImage = () => {
-    const chartContainer = document.getElementById("chart-container");
+  const saveChartImage = async () => {
+    // Create a new connection to the cluster's API
+    const connection = new Connection(clusterApiUrl("devnet"));
+    // Initialize a keypair for the user
+    const user = Cookies.get("account");
+
+    console.log("PublicKey:", user);
+
+    // metaplex set up
+    // const metaplex = Metaplex.make(connection)
+    //   .use(keypairIdentity(user))
+    //   .use(
+    //     bundlrStorage({
+    //       address: "https://devnet.bundlr.network",
+    //       providerUrl: "https://api.devnet.solana.com",
+    //       timeout: 60000,
+    //     })
+    //   );
+
+    // const chartContainer = document.getElementById("chart-container");
     // html2canvas(chartContainer).then((canvas) => {
     //   const imageData = canvas.toDataURL("image/png");
     //   setImageData(imageData);
     // });
-
-    html2canvas(document.querySelector("#chart-container")).then((canvas) => {
-      // document.body.appendChild(canvas)
-      console.log("canvas", canvas);
-    });
+    // try {
+    //   // Call the getMerkleTree function to obtain the treeKeypair and treeAuthority
+    //   const { treeKeypair, treeAuthority } = await getMerkleTree();
+    //   // Now you can use treeKeypair and treeAuthority as needed
+    //   console.log("Tree Keypair:", treeKeypair.publicKey.toBase58());
+    //   console.log("Tree Authority:", treeAuthority.toBase58());
+    //   // Other operations with treeKeypair and treeAuthority
+    // } catch (error) {
+    //   console.error("Error obtaining the merkle tree:", error);
+    // }
   };
 
   return (
@@ -91,61 +105,22 @@ const Dashboard = () => {
         padding: "20px", // Add padding for spacing
       }}
     >
-      <MUI.Paper elevation={3} style={{ padding: 20, marginBottom: 20 }}>
-        <MUI.Typography variant="h5" gutterBottom>
-          Welcome, Farmer! Get started by adding your farm to our system.
-        </MUI.Typography>
-        <MUI.Button
-          variant="contained"
-          color="success"
-          onClick={goToFarm}
-          href="/add-farm"
-        >
-          Add Farm
-        </MUI.Button>
-      </MUI.Paper>
-      <div id="chart-container">
-        <MUI.Paper elevation={3} style={{ padding: 20, width: "100%" }}>
-          <MUI.Typography variant="h6" gutterBottom>
-            Carbon NDVI  Chart
-          </MUI.Typography>
-          <LineChart
-            width={800}
-            height={400}
-            data={chartData}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <CartesianGrid stroke="#f5f5f5" />
-            <Line type="monotone" dataKey="ndvi" stroke="#ff7300" yAxisId={0} />
-          </LineChart>
-        </MUI.Paper>
-      </div>
-      {/* <MUI.Button variant="contained" color="primary" onClick={saveChartImage}>
-        Save Chart Image
-      </MUI.Button> */}
-      {imageData && (
-        <div>
-          <MUI.Paper
-            elevation={3}
-            style={{ padding: 20, marginTop: 20, width: "100%" }}
-          >
-            <MUI.Typography variant="h6" gutterBottom>
-              Saved Image
-            </MUI.Typography>
-            <img
-              src={imageData}
-              alt="Saved chart"
-              style={{ maxWidth: "100%" }}
-            />
-          </MUI.Paper>
-        </div>
-      )}
+      <MUI.Button variant="contained" color="primary" onClick={saveChartImage}>
+        Testing
+      </MUI.Button>
     </MUI.Container>
   );
 };
 
-export default Dashboard;
+// Define interfaces for NFT data
+class NftData {
+  constructor(name, symbol, description, sellerFeeBasisPoints, imageFile) {
+    this.name = name;
+    this.symbol = symbol;
+    this.description = description;
+    this.sellerFeeBasisPoints = sellerFeeBasisPoints;
+    this.imageFile = imageFile;
+  }
+}
+
+export default Profile;

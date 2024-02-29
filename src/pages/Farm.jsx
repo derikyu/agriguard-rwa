@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import * as MUI from '@mui/material';
+import React, { useState } from "react";
+import axios from "axios";
+import * as MUI from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import Cookies from "js-cookie";
 
 const Farm = () => {
   const [formData, setFormData] = useState({
@@ -16,39 +16,61 @@ const Farm = () => {
     cropTree: "cocoa",
     irrigationSystem: "drip irrigation",
     insurer: "Ghana Agricultural Insurance Pool (GAIP)",
-    farmerFields: "65dbe4b08b121f1cc8c95a43"
+    farmerFields: Cookies.get("farmerId"),
   });
 
-    // Format farmLocation array
-    const farmLocation = [
-        { type: "Point", coordinates: formData.farmLocation1.split(',').map(parseFloat) },
-        { type: "Point", coordinates: formData.farmLocation2.split(',').map(parseFloat) },
-        { type: "Point", coordinates: formData.farmLocation3.split(',').map(parseFloat) },
-        { type: "Point", coordinates: formData.farmLocation4.split(',').map(parseFloat) }
-    ];
+  // Format farmLocation array
+  const farmLocation = [
+    {
+      type: "Point",
+      coordinates: formData.farmLocation1.split(",").map(parseFloat),
+    },
+    {
+      type: "Point",
+      coordinates: formData.farmLocation2.split(",").map(parseFloat),
+    },
+    {
+      type: "Point",
+      coordinates: formData.farmLocation3.split(",").map(parseFloat),
+    },
+    {
+      type: "Point",
+      coordinates: formData.farmLocation4.split(",").map(parseFloat),
+    },
+  ];
 
   const requestData = {
-    "title": "Example Location",
-    "polygon": {
-        "type": "Polygon",
-        "coordinates": [
-            [
-                {"lng": farmLocation[0].coordinates[0], "lat": farmLocation[0].coordinates[1]},
-                {"lng": farmLocation[1].coordinates[0], "lat": farmLocation[1].coordinates[1]}, 
-                {"lng": farmLocation[2].coordinates[0], "lat": farmLocation[2].coordinates[1]},  
-                {"lng": farmLocation[3].coordinates[0], "lat": farmLocation[3].coordinates[1]}
-            ]
-        ]
-    }
-};
+    title: "Example Location",
+    polygon: {
+      type: "Polygon",
+      coordinates: [
+        [
+          {
+            lng: farmLocation[0].coordinates[0],
+            lat: farmLocation[0].coordinates[1],
+          },
+          {
+            lng: farmLocation[1].coordinates[0],
+            lat: farmLocation[1].coordinates[1],
+          },
+          {
+            lng: farmLocation[2].coordinates[0],
+            lat: farmLocation[2].coordinates[1],
+          },
+          {
+            lng: farmLocation[3].coordinates[0],
+            lat: farmLocation[3].coordinates[1],
+          },
+        ],
+      ],
+    },
+  };
 
- // Extracting coordinates
- const coordinates = requestData.polygon.coordinates[0].map(coord => [coord.lng, coord.lat]);
-
- // Creating new request data with only coordinates
- const requestDataWithCoordinates = {
-     "coordinates": coordinates,
- };
+  // Extracting coordinates
+  const coordinates = requestData.polygon.coordinates[0].map((coord) => [
+    coord.lng,
+    coord.lat,
+  ]);
 
   const navigate = useNavigate();
 
@@ -61,66 +83,80 @@ const Farm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const chartContainer = document.getElementById("chart-container");
+    html2canvas(chartContainer).then((canvas) => {
+      const imageData = canvas.toDataURL("image/png");
+      console.log("imageData", imageData);
+      // setImageData(imageData);
+    });
 
     try {
-
-        console.log("farmLocation ", requestData);
-        // Making the request with only coordinates
-        const response = await fetch(
-            "http://127.0.0.1:8000/ndvi",
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(requestData),
-            }
-          );
-        
-        console.log("response ", response);
-
-        //  // Updated formData object
-        //  const updatedFormData = {
-        //     farmName: "Farm 1",
-        //     farmLocation: farmLocation,
-        //     ownershipType: "family-owned",
-        //     ndvi_chart: "",
-        //     cropTree: "cocoa",
-        //     irrigationSystem: "drip irrigation",
-        //     insurer: "Ghana Agricultural Insurance Pool (GAIP)",
-        //     farmerFields: "65dbe4b08b121f1cc8c95a43"
-        //   };
-        // console.log(updatedFormData);
-  
-        // const response = await fetch(
-        //   "https://ecedilink.onrender.com/farm-fields",
-        //   {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        //     body: JSON.stringify(updatedFormData),
-        //   }
-        // );
-  
-        // if (!response.ok) {
-        //   throw new Error(`Error: ${response.statusText}`);
-        // }
-  
-        // const data = await response.json();
-        // // calculate ndvi
-        // // // Extracting coordinates
-        // // const coordinates = requestData.polygon.coordinates[0].map(coord => [coord.lng, coord.lat]);
-
-        // // // Creating new request data with only coordinates
-        // // const requestDataWithCoordinates = {
-        // //     "coordinates": coordinates,
-        // //     "start_date": requestData.start_date,
-        // //     "end_date": requestData.end_date
-        // // };
-        // // update the users profile with new ndvi chat data
-        // // save id to cookie
-        // console.log("Farmer data created successfully:", data);
-        // navigate("/dashboard");
-      } catch (error) {
-        console.error("Error sending form data:", error.code);
-      }
+      // Call the getMerkleTree function to obtain the treeKeypair and treeAuthority
+      const { treeKeypair, treeAuthority } = await getMerkleTree();
+      // Now you can use treeKeypair and treeAuthority as needed
+      console.log("Tree Keypair:", treeKeypair.publicKey.toBase58());
+      console.log("Tree Authority:", treeAuthority.toBase58());
+      // Other operations with treeKeypair and treeAuthority
+    } catch (error) {
+      console.error("Error obtaining the merkle tree:", error);
+    }
+    // try {
+    // console.log("farmLocation ", requestData);
+    // //  // Updated formData object
+    // const updatedFormData = {
+    //   farmName: "Farm 1",
+    //   farmLocation: farmLocation,
+    //   ownershipType: "family-owned",
+    //   ndvi_chart: "",
+    //   cropTree: "cocoa",
+    //   irrigationSystem: "drip irrigation",
+    //   insurer: "Ghana Agricultural Insurance Pool (GAIP)",
+    //   farmerFields: Cookies.get("farmerId"),
+    // };
+    // // console.log(updatedFormData);
+    // const response = await fetch("http://localhost:3000/farm-fields/", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(updatedFormData),
+    // });
+    // if (!response.ok) {
+    //   throw new Error(`Error: ${response.statusText}`);
+    // }
+    // const data = await response.json();
+    // // calculate ndvi
+    // // Extracting coordinates
+    // // Making the request with only coordinates
+    // axios
+    //   .post("http://127.0.0.1:8000/ndvi/", requestData)
+    //   .then((response) => {
+    //     console.log("Request successful:", response.data.cvs_data);
+    //     // update the users farm profile with new ndvi chat data
+    //     // update by farm id data._id
+    //     const newData = {
+    //       ndvi_chart: response.data.cvs_data,
+    //     };
+    //     axios
+    //       .put(`http://localhost:3000/farm-fields/${data._id}`, newData)
+    //       .then((response) => {
+    //         console.log("Resource updated successfully:", response.data);
+    //         // create nft from chart
+    //         // pass chart data to the nft creation method
+    //         // pass
+    //         // Navigate to the dashboard after successful update
+    //         navigate("/dashboard");
+    //       })
+    //       .catch((error) => {
+    //         console.error("Error updating resource:", error);
+    //       });
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error:", error);
+    //   });
+    // save id to cookie
+    // console.log("Farmer data created successfully:", data);
+    // } catch (error) {
+    //   console.error("Error sending form data:", error.code);
+    // }
   };
 
   return (
@@ -226,7 +262,7 @@ const Farm = () => {
           fullWidth
           sx={{ mb: 2 }}
         />
-        <MUI.Button type="submit" variant="contained" color="primary">
+        <MUI.Button type="submit" variant="contained" color="success">
           Submit
         </MUI.Button>
       </MUI.Box>

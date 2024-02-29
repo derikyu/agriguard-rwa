@@ -15,7 +15,7 @@ import Home from "./pages/routes/home";
 import MyFirstForm from "./pages/MyFirstForm";
 import Farmer from "../src/pages/Farmer";
 import Farm from "../src/pages/Farm";
-
+import Profile from "../src/pages/Profile";
 
 function App() {
   const router = createBrowserRouter([
@@ -47,11 +47,15 @@ function App() {
         {
           path: "/farm",
           element: <Farm />,
-        }
-      ]
+        },
+        {
+          path: "/profile",
+          element: <Profile />,
+        },
+      ],
     },
   ]);
-  
+
   return <RouterProvider router={router} />;
 }
 
